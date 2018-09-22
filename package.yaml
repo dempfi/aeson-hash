@@ -1,0 +1,22 @@
+name:                objhash
+version:             0.1.0.0
+#synopsis:
+#description:
+homepage:            https://github.com/dempfi/objhash#readme
+license:             BSD3
+author:              Ike Ku
+maintainer:          dempfi@yahoo.com
+copyright:           2018 Ike Ku
+category:            System
+extra-source-files:
+- README.md
+
+ghc-options: -Wall
+
+dependencies:
+  - base >= 4.7 && < 5
+
+library:
+  source-dirs: src
+  exposed-modules:
+    - ObjHash
