@@ -1,13 +1,13 @@
-name:                objhash
+name:                aeson-hash
 version:             0.1.0.0
 #synopsis:
 #description:
-homepage:            https://github.com/dempfi/objhash#readme
+homepage:            https://github.com/dempfi/aeson-hash#readme
 license:             BSD3
 author:              Ike Ku
 maintainer:          dempfi@yahoo.com
 copyright:           2018 Ike Ku
-category:            System
+category:            Cryptography
 extra-source-files:
 - README.md
 
@@ -15,8 +15,21 @@ ghc-options: -Wall
 
 dependencies:
   - base >= 4.7 && < 5
+  - bytestring
+  - aeson
+  - scientific
+  - text
+  - cryptohash-sha256
+  - unordered-containers
 
 library:
   source-dirs: src
   exposed-modules:
-    - ObjHash
+    - Data.Aeson.Hash
+
+tests:
+  spec:
+    main: Spec.hs
+    source-dirs:
+      - test
+      - src
