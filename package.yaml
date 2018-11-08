@@ -21,6 +21,7 @@ dependencies:
   - text
   - cryptohash-sha256
   - unordered-containers
+  - vector
 
 library:
   source-dirs: src

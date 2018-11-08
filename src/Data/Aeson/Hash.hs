@@ -11,6 +11,7 @@ module Data.Aeson.Hash
 import Data.List (sort)
 import Data.Aeson (ToJSON, toJSON)
 import qualified Data.Text as Text
+import qualified Data.Vector as Vector
 import qualified Data.ByteString as BS
 import qualified Data.Aeson.Types as Types
 import qualified Crypto.Hash.SHA256 as SHA256
@@ -58,8 +59,9 @@ hashNumber sci =
     num = floatingOrInteger sci
 
 hashArray :: Types.Array -> BS.ByteString
-hashArray _ = BS.empty
--- hashArray a = concat $ Vector.map hashValue a
+hashArray arr = sha256 "l" $ BS.concat $ bsList
+  where
+    bsList = Vector.toList $ Vector.map hashValue arr
 
 hashObject :: Types.Object -> BS.ByteString
 hashObject obj = sha256 "d" $ BS.concat $ sort hashedElements
@@ -70,8 +72,8 @@ hashObject obj = sha256 "d" $ BS.concat $ sort hashedElements
 hashValue :: Types.Value -> BS.ByteString
 hashValue Types.Null = hashNull
 hashValue (Types.Bool b) = hashBool b
+hashValue (Types.Array a) = hashArray a
 hashValue (Types.String s) = hashString s
-hashValue (Types.Array xs) = hashArray xs
 hashValue (Types.Number n) = hashNumber n
 hashValue (Types.Object o) = hashObject o
 
