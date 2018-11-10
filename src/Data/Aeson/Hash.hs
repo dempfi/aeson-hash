@@ -1,11 +1,6 @@
 module Data.Aeson.Hash
   (
     hash
-  , hashNull
-  , hashBool
-  , hashNumber
-  , hashArray
-  , hashString
   ) where
 
 import Data.List (sort)
@@ -15,7 +10,7 @@ import qualified Data.Vector as Vector
 import qualified Data.ByteString as BS
 import qualified Data.Aeson.Types as Types
 import qualified Crypto.Hash.SHA256 as SHA256
-import Data.Scientific (Scientific, floatingOrInteger)
+import Data.Scientific (Scientific, toRealFloat)
 import Data.HashMap.Strict (toList)
 import Data.ByteString.Char8 (pack)
 
@@ -39,6 +34,20 @@ significandString d
   | d >= 1    = "1" ++ significandString ((d - 1) * 2)
   | otherwise = "0" ++ significandString (d * 2)
 
+-- Specific to object hash, wrong (exp 1 = 0) exponent
+customExponent :: Double -> Int -> Int
+customExponent m n
+  | m > 1     = customExponent (m / 2) (n + 1)
+  | m < 0.5   = customExponent (m * 2) (n - 1)
+  | otherwise = n
+
+-- Specific to object hash, not mathematically accurate
+customSignificand :: Double -> Double
+customSignificand m
+  | m > 1     = customSignificand (m / 2)
+  | m < 0.5   = customSignificand (m * 2)
+  | otherwise = m
+
 normalizeDouble :: Double -> String
 normalizeDouble d
   | isInfinite d = if d > 0 then "Infinity" else "-Infinity"
@@ -48,15 +57,10 @@ normalizeDouble d
   | d > 0        = "+" ++ stringified d
   where
     stringified n =
-      show (exponent n) ++ ":" ++ significandString (significand n)
+      show (customExponent n 0) ++ ":" ++ significandString (customSignificand n)
 
 hashNumber :: Scientific -> BS.ByteString
-hashNumber sci =
-  case num of
-    Left double -> sha256 "f" $ pack $ normalizeDouble double
-    Right int -> sha256 "i" $ pack $ show int
-  where
-    num = floatingOrInteger sci
+hashNumber n = sha256 "f" $ pack $ normalizeDouble $ toRealFloat n
 
 hashArray :: Types.Array -> BS.ByteString
 hashArray arr = sha256 "l" $ BS.concat $ bsList

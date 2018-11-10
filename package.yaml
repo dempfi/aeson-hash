@@ -34,3 +34,5 @@ tests:
     source-dirs:
       - test
       - src
+    dependencies:
+      - hspec
