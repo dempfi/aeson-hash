@@ -1,1 +1,1 @@
-__Haskell implementation of object hash__
+<div align="center"><img src="assets/hero.png" width="800"/></div>
